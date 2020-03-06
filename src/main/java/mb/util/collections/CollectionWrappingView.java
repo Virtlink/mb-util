@@ -108,7 +108,7 @@ import java.util.stream.Stream;
             // Happy path
             return this.collection.equals(((CollectionWrappingView<?>)obj).collection);
         } else {
-            return super.equals(obj);
+            return asUnmodifiable().equals(obj);
         }
     }
 

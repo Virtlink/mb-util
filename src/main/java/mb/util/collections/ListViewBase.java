@@ -80,6 +80,49 @@ import java.util.function.UnaryOperator;
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof Iterable<?>)) return false;
+
+        // This implementation will throw a StackOverflowError when
+        // the collection contains itself, directly or indirectly.
+
+        // This implementation does not assume calls to size() report the same size as
+        // the number of elements returned by the iterators, as the collection might
+        // be concurrently modified between calls to size() and comparing the elements.
+
+        Iterator<E> e1 = this.iterator();
+        Iterator<?> e2 = ((Iterable<?>)obj).iterator();
+        while (e1.hasNext() && e2.hasNext()) {
+            E o1 = e1.next();
+            Object o2 = e2.next();
+            if (!Objects.equals(o1, o2))
+                return false;
+        }
+
+        // Check whether both iterators have the same size.
+        return !(e1.hasNext() || e2.hasNext());
+    }
+
+    @Override
+    public int hashCode() {
+        // Calculate with allocating an Iterator
+
+        // This implementation will throw a StackOverflowError when
+        // the collection contains itself, directly or indirectly.
+
+        // This implementation does not assume calls to size() report the same size as
+        // the number of elements returned by the iterators, as the collection might
+        // be concurrently modified between calls to size() and comparing the elements.
+
+        int hashCode = 17;
+        for (E e : this) {
+            hashCode = 31 * hashCode + (e != null ? e.hashCode() : 0);
+        }
+        return hashCode;
+    }
+
+    @Override
     public String toString() {
         // Calculate with allocating an Iterator
 
