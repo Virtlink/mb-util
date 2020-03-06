@@ -10,6 +10,8 @@ High-level design goals:
 - Performant: where possible, allocations are reduced or removed (e.g., `Iterator` allocations), and where possible, the code will exit early (e.g., a size test before comparing lists)
 - It should be easy to implement `ListView` or `CollectionView`; therefore there are many useful default implementations in the interface
 - Code should not have to access the actual implementations: all classes are package local, only `ListView<E>` and `CollectionView<E>` are externally visible
+- Similarly, all interfaces provide `of()`, `from()` and `fromCopy()` static functions that can create new instances of the corresponding interface.
+  The implementation is free to choose the actual implementation, and whether to return a new instance or an existing one.
 
 Details:
 - The methods `of()`, `from()` and `fromCopy()` create new instances from an array of elements, a list, or a copy of a list respectively. The distinction between from() and of() is allow the creation of a list of lists.
@@ -22,3 +24,21 @@ Details:
 - Lists return the same hashcode as the `AbstractList` of Java.
 - Lists can be compared to any `Iterable`.
 - The default implementations return themselves on a call to `asUnmodifiable()`, making this very cheap.
+
+
+## Mutable Collections
+
+[mb.util.collections.mutable](src/main/java/mb/util/collections/mutable)
+
+The mutable collection interfaces implement the normal Java interfaces as well,
+and actually guarantee that they can be mutated (therefore adhering to the interface specification).
+
+
+## Immutable and Persistent Collections
+
+[mb.util.collections.immutable](src/main/java/mb/util/collections/immutable)
+
+The immutable collection interfaces guarantee that the collection never changes and that it's
+thread-safe. The persistent collection interfaces allow the collection to be changed,
+where each change returns a new persistent collection. They also provide a `builder()` method,
+which returns a `Builder` object that implements the corresponding mutable collection interface.
