@@ -12,10 +12,10 @@ import java.util.*;
 public interface ListView<E> extends CollectionView<E>, RandomAccess, Serializable {
 
     /**
-     * Creates an empty unmodifiable collection.
+     * Creates an empty unmodifiable list.
      *
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
+     * @param <E> the type of elements in the list
+     * @return the unmodifiable list
      */
     static <E> ListView<E> of() {
         // This overload of of() always returns the same empty ListView instance.
@@ -24,11 +24,11 @@ public interface ListView<E> extends CollectionView<E>, RandomAccess, Serializab
     }
 
     /**
-     * Creates a singleton unmodifiable collection.
+     * Creates a singleton unmodifiable list.
      *
-     * @param element the element in the collection
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
+     * @param element the element in the list
+     * @param <E> the type of elements in the list
+     * @return the unmodifiable list
      */
     static <E> ListView<E> of(E element) {
         // This overload of of() returns a singleton ListView instance.
@@ -36,33 +36,33 @@ public interface ListView<E> extends CollectionView<E>, RandomAccess, Serializab
     }
 
     /**
-     * Creates an unmodifiable collection from the specified array.
+     * Creates an unmodifiable list from the specified array.
      *
-     * @param elements the elements in the collection
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
+     * @param elements the elements in the list
+     * @param <E> the type of elements in the list
+     * @return the unmodifiable list
      */
     @SafeVarargs static <E> ListView<E> of(E... elements) {
         return new ListArrayView<>(elements);
     }
 
     /**
-     * Creates an unmodifiable collection wrapping the specified collection.
+     * Creates an unmodifiable list wrapping the specified list.
      *
-     * @param collection the collection to wrap
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
+     * @param list the list to wrap
+     * @param <E> the type of elements in the list
+     * @return the unmodifiable list
      */
-    static <E> ListView<E> from(List<? extends E> collection) {
-        return new ListWrappingView<>(collection);
+    static <E> ListView<E> from(List<? extends E> list) {
+        return new ListWrappingView<>(list);
     }
 
     /**
-     * Creates an unmodifiable collection wrapping a copy of the specified elements.
+     * Creates an unmodifiable list wrapping a copy of the specified elements.
      *
      * @param elements the elements to copy
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
+     * @param <E> the type of elements in the list
+     * @return the unmodifiable list
      */
     static <E> ListView<E> copyFrom(Iterable<? extends E> elements) {
         final ArrayList<E> list = new ArrayList<>();
@@ -73,14 +73,14 @@ public interface ListView<E> extends CollectionView<E>, RandomAccess, Serializab
     }
 
     /**
-     * Creates an unmodifiable collection wrapping a copy of the specified collection.
+     * Creates an unmodifiable list wrapping a copy of the specified list.
      *
-     * @param collection the collection to copy
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
+     * @param list the list to copy
+     * @param <E> the type of elements in the list
+     * @return the unmodifiable list
      */
-    static <E> CollectionView<E> copyFrom(Collection<? extends E> collection) {
-        return new CollectionWrappingView<>(new ArrayList<>(collection));
+    static <E> ListView<E> copyFrom(List<? extends E> list) {
+        return new ListWrappingView<>(new ArrayList<>(list));
     }
 
     E get(int index);
@@ -163,7 +163,12 @@ public interface ListView<E> extends CollectionView<E>, RandomAccess, Serializab
     }
 
 
-    ListView<E> subListView(int fromIndex, int toIndex);
+    default ListView<E> subListView(int fromIndex, int toIndex) {
+        if (fromIndex < 0 || fromIndex > size() || toIndex < fromIndex || toIndex > size())
+            throw new IndexOutOfBoundsException();
+
+        return new SubListView<>(this, fromIndex, toIndex - fromIndex);
+    }
 
     @Override List<E> asUnmodifiable();
 

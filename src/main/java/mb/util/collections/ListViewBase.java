@@ -67,10 +67,7 @@ import java.util.function.UnaryOperator;
 
     @Override
     public ListView<E> subListView(int fromIndex, int toIndex) {
-        if (fromIndex < 0 || fromIndex > size() || toIndex < fromIndex || toIndex > size())
-            throw new IndexOutOfBoundsException();
-
-        return new SubListView<>(this, fromIndex, toIndex - fromIndex);
+        return ListView.super.subListView(fromIndex, toIndex);
     }
 
     @NotNull

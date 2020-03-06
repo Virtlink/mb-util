@@ -18,6 +18,8 @@ import java.util.stream.Stream;
  */
 /* package private */ class EmptyListView<E> extends ListViewBase<E> implements Serializable {
 
+    // TODO: Implement PersistentList
+
     /** A singleton empty list. */
     /* package private */ static final ListView<?> INSTANCE = new EmptyListView<>();
 
