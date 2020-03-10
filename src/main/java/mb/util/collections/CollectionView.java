@@ -1,5 +1,6 @@
 package mb.util.collections;
 
+import mb.util.EqualityComparator;
 
 import java.io.Serializable;
 import java.util.*;
@@ -8,6 +9,14 @@ import java.util.stream.StreamSupport;
 
 /**
  * An unmodifiable view of a collection.
+ *
+ * This interface is covariant.
+ *
+ * Changes to the underlying collection are visible through this view.
+ * To get an immutable collection, use one of the immutable interfaces.
+ *
+ * The implementation may not be thread-safe.
+ * To get a thread-safe implementation, use one of the immutable interfaces.
  *
  * @param <E> the type of elements in the collection
  */
@@ -102,6 +111,17 @@ public interface CollectionView<E> extends Iterable<E>, Serializable {
      */
     default boolean isEmpty() {
         return size() == 0;
+    }
+
+    /**
+     * Gets the equality comparator used to compare the objects in this collection.
+     *
+     * @return the equality comparator
+     */
+    default EqualityComparator<? super E> getComparator() {
+        // Most implementations do not support custom equality comparators,
+        // and just use the equals() and hashCode() implementations of the objects by default.
+        return EqualityComparator.getDefault();
     }
 
     /**
