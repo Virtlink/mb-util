@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
     private DefaultEqualityComparator() {}
 
     @Override
-    public boolean compare(@Nullable T x, @Nullable T y) {
+    public boolean equals(@Nullable T x, @Nullable T y) {
         if (x == y) return true;    // Also captures x == null && y == null.
         if (x == null || y == null) return false;
         return x.equals(y);

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
     private IdentityEqualityComparator() {}
 
     @Override
-    public boolean compare(@Nullable T x, @Nullable T y) {
+    public boolean equals(@Nullable T x, @Nullable T y) {
         return x == y;  // Also captures x == null && y == null.
     }
 

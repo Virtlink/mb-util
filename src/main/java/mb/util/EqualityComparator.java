@@ -37,7 +37,7 @@ public interface EqualityComparator<T> {
      * @return {@code true} when the objects are equal;
      * otherwise, {@code false}
      */
-    boolean compare(@Nullable T x, @Nullable T y);
+    boolean equals(@Nullable T x, @Nullable T y);
 
     /**
      * Computes the hash code of the specified object.
