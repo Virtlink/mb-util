@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.70'
     id "me.champeau.gradle.jmh" version "0.5.0"
 }
 
@@ -17,13 +18,22 @@ dependencies {
     // This library must have only compileOnly and test dependencies.
     compileOnly         "org.jetbrains:annotations:19.0.0"
 
+    // Kotlin is only used as a test dependency.
+    testImplementation  "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    // Unit testing framework
     testImplementation  "org.junit.jupiter:junit-jupiter-api:5.5.2"
     testRuntimeOnly     "org.junit.jupiter:junit-jupiter-engine:5.5.2"
 
+    // Benmarking framework
     jmh                 "org.openjdk.jmh:jmh-core:1.23"
     jmh                 "org.openjdk.jmh:jmh-generator-annprocess:1.23"
 }
 
 test {
     useJUnitPlatform()
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
 }
