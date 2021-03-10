@@ -22,80 +22,91 @@ import java.util.stream.StreamSupport;
  */
 public interface CollectionView<E> extends Iterable<E>, Serializable {
 
-    /**
-     * Creates an empty unmodifiable collection.
-     *
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
-     */
-    static <E> CollectionView<E> of() {
-        // This overload of of() always returns the same empty ListView instance.
-        //noinspection unchecked
-        return (CollectionView<E>) EmptyListView.INSTANCE;
-    }
-
-    /**
-     * Creates a singleton unmodifiable collection.
-     *
-     * @param element the element in the collection
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
-     */
-    static <E> CollectionView<E> of(E element) {
-        // This overload of of() returns a singleton ListView instance.
-        return new ListSingletonView<>(element);
-    }
-
-    /**
-     * Creates an unmodifiable collection from the specified array.
-     *
-     * @param elements the elements in the collection
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
-     */
-    @SafeVarargs static <E> CollectionView<E> of(E... elements) {
-        if (elements.length == 0) return of();
-        return new ListArrayView<>(elements);
-    }
-
-    /**
-     * Creates an unmodifiable collection wrapping the specified collection.
-     *
-     * @param collection the collection to wrap
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
-     */
-    static <E> CollectionView<E> from(Collection<? extends E> collection) {
-        return new CollectionWrappingView<>(collection);
-    }
-
-    /**
-     * Creates an unmodifiable collection wrapping a copy of the specified elements.
-     *
-     * @param elements the elements to copy
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
-     */
-    static <E> CollectionView<E> copyFrom(Iterable<? extends E> elements) {
-        final ArrayList<E> list = new ArrayList<>();
-        for (E element : elements) {
-            list.add(element);
-        }
-        return new CollectionWrappingView<>(list);
-    }
-
-    /**
-     * Creates an unmodifiable collection wrapping a copy of the specified collection.
-     *
-     * @param collection the collection to copy
-     * @param <E> the type of elements in the collection
-     * @return the unmodifiable collection
-     */
-    static <E> CollectionView<E> copyFrom(Collection<? extends E> collection) {
-        return new CollectionWrappingView<>(new ArrayList<>(collection));
-    }
-
-
+//    /**
+//     * Creates an empty unmodifiable collection.
+//     *
+//     * @param <E> the type of elements in the collection
+//     * @return the unmodifiable collection
+//     */
+//    static <E> CollectionView<E> of() {
+//        return ListView.of();
+//    }
+//
+//    /**
+//     * Creates a singleton unmodifiable collection.
+//     *
+//     * @param element the element in the collection
+//     * @param <E> the type of elements in the collection
+//     * @return the unmodifiable collection
+//     */
+//    static <E> CollectionView<E> of(E element) {
+//        return ListView.of(element);
+//    }
+//
+//    /**
+//     * Creates an unmodifiable collection from the specified array.
+//     *
+//     * Changes to the input array are reflected in this collection.
+//     *
+//     * @param elements the elements in the collection
+//     * @param <E> the type of elements in the collection
+//     * @return the unmodifiable collection
+//     */
+//    @SafeVarargs static <E> CollectionView<E> of(E... elements) {
+//        return ListView.of(elements);
+//    }
+//
+//    /**
+//     * Creates an unmodifiable collection by wrapping the specified iterable.
+//     *
+//     * Changes to the input iterable are reflected in this collection.
+//     *
+//     * @param elements the elements to wrap
+//     * @param <E> the type of elements in the collection
+//     * @return the unmodifiable collection
+//     */
+//    static <E> CollectionView<E> from(Iterable<? extends E> elements) {
+//        if (elements instanceof CollectionView<?>) {
+//            // When the collection is an unmodifiable collection (and implements CollectionView) we can just return it.
+//            //noinspection unchecked
+//            return (CollectionView<E>)elements;
+//        } else if (elements instanceof Collection<?>) {
+//            // When the iterable is a collection, we call the other overload.
+//            //noinspection unchecked
+//            return from((Collection<E>)elements);
+//        } else {
+//            // Otherwise, we wrap the iterable in an unmodifiable list.
+//            return ListView.from(elements);
+//        }
+//    }
+//
+//    /**
+//     * Creates an unmodifiable collection wrapping the specified collection.
+//     *
+//     * Changes to the input collection are reflected in this collection.
+//     *
+//     * @param collection the collection to wrap
+//     * @param <E> the type of elements in the collection
+//     * @return the unmodifiable collection
+//     */
+//    static <E> CollectionView<E> from(Collection<? extends E> collection) {
+//        if (collection instanceof CollectionView<?>) {
+//            // When the collection is an unmodifiable collection (and implements CollectionView) we can just return it.
+//            //noinspection unchecked
+//            return (CollectionView<E>)collection;
+//        } else if (collection instanceof List<?>) {
+//            // When the collection is a list, we wrap it in a ListView.
+//            //noinspection unchecked
+//            return ListView.from((List<E>)collection);
+//        } else if (collection instanceof Set<?>) {
+//            // When the collection is a set, we wrap it in a SetView.
+//            //noinspection unchecked
+//            return SetView.from((Set<E>)collection);
+//        } else {
+//            // Otherwise, we wrap the collection in an unmodifiable collection.
+//            return new CollectionWrappingView<>(collection);
+//        }
+//    }
 
     /**
      * Gets the size of the collection.

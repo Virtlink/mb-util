@@ -18,8 +18,8 @@ public interface PersistentList<E> extends PersistentCollection<E>, ImmutableLis
      * @param <E> the type of elements in the list
      * @return the persistent list
      */
-    static <E> PersistentCollection<E> of() {
-        // This overload of of() always returns the same empty PersistentCollection instance.
+    static <E> PersistentList<E> of() {
+        // We can return a special empty implementation.
         throw new UnsupportedOperationException();
     }
 
@@ -30,55 +30,79 @@ public interface PersistentList<E> extends PersistentCollection<E>, ImmutableLis
      * @param <E> the type of elements in the list
      * @return the persistent list
      */
-    static <E> PersistentCollection<E> of(E element) {
-        // This overload of of() returns a singleton PersistentCollection instance.
+    static <E> PersistentList<E> of(E element) {
+        // We can return a special singleton implementation.
         throw new UnsupportedOperationException();
     }
 
     /**
      * Creates an persistent list from the specified array.
      *
+     * Changes to the input array are not reflected in this list.
+     *
      * @param elements the elements in the list
      * @param <E> the type of elements in the list
      * @return the persistent list
      */
-    @SafeVarargs static <E> PersistentCollection<E> of(E... elements) {
-        throw new UnsupportedOperationException();
+    @SafeVarargs static <E> PersistentList<E> of(E... elements) {
+        if (elements.length == 0) {
+            // When the array is empty, we can just return the empty list,
+            // because the input array cannot be modified and the fact that it
+            // isn't part of the returned ListView is unobservable.
+            return of();
+        } else {
+            // Otherwise, we copy the elements into a persistent list.
+            // TODO:
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
-     * Creates an persistent list wrapping the specified list.
+     * Creates a persistent list by copying the elements from the specified iterable.
      *
-     * @param list the list to wrap
+     * Changes to the input iterable are not reflected in this list.
+     *
+     * @param elements the elements to include
      * @param <E> the type of elements in the list
      * @return the persistent list
      */
-    static <E> PersistentCollection<E> from(List<? extends E> list) {
-        throw new UnsupportedOperationException();
+    static <E> PersistentList<E> from(Iterable<? extends E> elements) {
+        if (elements instanceof PersistentList<?>) {
+            // When the iterable is a persistent list (and implements ListView) we can just return it.
+            //noinspection unchecked
+            return (PersistentList<E>)elements;
+        } else if (elements instanceof List<?>) {
+            // When the iterable is a list, we can call the other overload.
+            //noinspection unchecked
+            return from((List<E>)elements);
+        } else {
+            // Otherwise, we copy the elements into a persistent list.
+            // TODO:
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
-     * Creates an persistent list wrapping a copy of the specified elements.
+     * Creates a persistent list from the specified list.
      *
-     * @param elements the elements to copy
+     * Changes to the input list are not reflected in this list.
+     *
+     * @param list the list whose elements to include
      * @param <E> the type of elements in the list
      * @return the persistent list
      */
-    static <E> PersistentCollection<E> copyFrom(Iterable<? extends E> elements) {
-        throw new UnsupportedOperationException();
+    static <E> PersistentList<E> from(List<? extends E> list) {
+        if (list instanceof PersistentList<?>) {
+            // When the list is a persistent list (and implements ListView) we can just return it.
+            //noinspection unchecked
+            return (PersistentList<E>)list;
+        } else {
+            // Otherwise, we copy the elements into a persistent list.
+            // TODO:
+            throw new UnsupportedOperationException();
+        }
     }
 
-    /**
-     * Creates an persistent list wrapping a copy of the specified list.
-     *
-     * @param list the list to copy
-     * @param <E> the type of elements in the list
-     * @return the persistent list
-     */
-    static <E> PersistentCollection<E> copyFrom(List<? extends E> list) {
-        throw new UnsupportedOperationException();
-    }
-    
     PersistentList<E> set(int index, E element);
     PersistentList<E> insertAt(int index, E element);
     PersistentList<E> insertAllAt(int index, Iterator<? extends E> elements);

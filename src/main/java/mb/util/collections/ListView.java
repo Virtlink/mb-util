@@ -1,5 +1,6 @@
 package mb.util.collections;
 
+import mb.util.collections.immutable.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 
 import org.jetbrains.annotations.Nullable;
@@ -7,9 +8,19 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * An immutable view of a list.
+ * An unmodifiable view of a list.
+ *
+ * This interface is covariant.
+ *
+ * Changes to the underlying list are visible through this view.
+ * To get an immutable list, use one of the immutable interfaces.
+ *
+ * The implementation may not be thread-safe.
+ * To get a thread-safe implementation, use one of the immutable interfaces.
+ *
+ * @param <E> the type of elements in the collection
  */
-public interface ListView<E> extends CollectionView<E>, RandomAccess, Serializable {
+public interface ListView<E> extends CollectionView<E>, Serializable {
 
     /**
      * Creates an empty unmodifiable list.
@@ -18,9 +29,10 @@ public interface ListView<E> extends CollectionView<E>, RandomAccess, Serializab
      * @return the unmodifiable list
      */
     static <E> ListView<E> of() {
-        // This overload of of() always returns the same empty ListView instance.
+        // We can return a special empty implementation.
         //noinspection unchecked
         return (ListView<E>)EmptyListView.INSTANCE;
+//        return ImmutableList.of();
     }
 
     /**
@@ -31,56 +43,75 @@ public interface ListView<E> extends CollectionView<E>, RandomAccess, Serializab
      * @return the unmodifiable list
      */
     static <E> ListView<E> of(E element) {
-        // This overload of of() returns a singleton ListView instance.
+        // We can return a special singleton implementation.
         return new ListSingletonView<>(element);
+//        return ImmutableList.of(element);
     }
 
     /**
      * Creates an unmodifiable list from the specified array.
+     *
+     * Changes to the input array are reflected in this list.
      *
      * @param elements the elements in the list
      * @param <E> the type of elements in the list
      * @return the unmodifiable list
      */
     @SafeVarargs static <E> ListView<E> of(E... elements) {
-        return new ListArrayView<>(elements);
+        if (elements.length == 0) {
+            // When the array is empty, we can just return the empty list,
+            // because the input array cannot be modified and the fact that it
+            // isn't part of the returned ListView is unobservable.
+            return of();
+        } else {
+            // Otherwise, we wrap the array in a SetView.
+            return new ListArrayView<>(elements);
+        }
+    }
+
+    /**
+     * Creates an unmodifiable list by wrapping the specified iterable.
+     *
+     * Changes to the input iterable are reflected in this list.
+     *
+     * @param elements the elements to wrap
+     * @param <E> the type of elements in the list
+     * @return the unmodifiable list
+     */
+    static <E> ListView<E> from(Iterable<? extends E> elements) {
+        if (elements instanceof ListView<?>) {
+            // When the iterable is an unmodifiable list (and implements ListView) we can just return it.
+            //noinspection unchecked
+            return (ListView<E>)elements;
+        } else if (elements instanceof List<?>) {
+            // When the iterable is a list, we call the other overload.
+            //noinspection unchecked
+            return from((List<E>)elements);
+        } else {
+            // Otherwise, we wrap the iterable in an unmodifiable list.
+            // TODO:
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
      * Creates an unmodifiable list wrapping the specified list.
+     *
+     * Changes to the input list are reflected in this list.
      *
      * @param list the list to wrap
      * @param <E> the type of elements in the list
      * @return the unmodifiable list
      */
     static <E> ListView<E> from(List<? extends E> list) {
-        return new ListWrappingView<>(list);
-    }
-
-    /**
-     * Creates an unmodifiable list wrapping a copy of the specified elements.
-     *
-     * @param elements the elements to copy
-     * @param <E> the type of elements in the list
-     * @return the unmodifiable list
-     */
-    static <E> ListView<E> copyFrom(Iterable<? extends E> elements) {
-        final ArrayList<E> list = new ArrayList<>();
-        for (E element : elements) {
-            list.add(element);
+        if (list instanceof ListView<?>) {
+            // When the list is an unmodifiable list (and implements ListView) we can just return it.
+            //noinspection unchecked
+            return (ListView<E>)list;
+        } else {
+            // Otherwise, we wrap the set in an unmodifiable set.
+            return new ListWrappingView<>(list);
         }
-        return new ListWrappingView<>(list);
-    }
-
-    /**
-     * Creates an unmodifiable list wrapping a copy of the specified list.
-     *
-     * @param list the list to copy
-     * @param <E> the type of elements in the list
-     * @return the unmodifiable list
-     */
-    static <E> ListView<E> copyFrom(List<? extends E> list) {
-        return new ListWrappingView<>(new ArrayList<>(list));
     }
 
     E get(int index);

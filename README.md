@@ -2,6 +2,35 @@
 
 ## Collections
 
+- `ListView` - an ordered list
+- `SetView` - a set
+- `MapView` - an associative array
+- `BagView` - a multiset
+
+- `MutableCollection`
+  - `get` - gets the next element that would be returned by a call to `remove()`
+  - `add` - adds an element to the collection
+    - `List` - adds at the back
+    - `Stack` - adds to the front
+    - `Queue` - adds to the back
+    - `PriorityQueue` - adds somewhere
+    - `Set` - adds anywhere
+  - `remove` - removes an element from the collection (from the back of a list)
+    - `List` - removes from the back
+    - `Stack` - removes from the front
+    - `Queue` - removes from the front
+    - `Set` - removes anything
+  - NOTE: there is no guarantee that `add(e)` `remove()` returns the same element `e`.
+  
+- `MutableList` : `MutableCollection`
+  - `peek` - gets the next element that would be returned by a call to `pop()`
+  - `push` - adds an element at the front of the list
+  - `pop` - removes an element at the front of the list  
+
+For a stack, use `push` and `pop`.
+For a queue, use `add` and `pop`, or `push` and `remove`.
+
+
 Here is a proposal for a `ListView` interface implementation:
 
 [mb.util.collections](src/main/java/mb/util/collections)
